@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const EXT_DIR = path.resolve("apps/core/extension/五班阿");
+const EXT_DIR = path.resolve("apps/core/extension/wubana");
 const PARTS_DIR = path.join(EXT_DIR, "parts");
 const OUT_DIR = path.resolve("dist-wba-classic");
 const OUT_FILE = path.join(OUT_DIR, "extension.js");

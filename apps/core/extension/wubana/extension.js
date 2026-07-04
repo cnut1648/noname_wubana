@@ -12,12 +12,14 @@ const groups = [group1, group2, group3, group4, group5, group6];
 const character = Object.assign({}, ...groups.map(g => g.character));
 const skill = Object.assign({}, ...groups.map(g => g.skill));
 const translate = Object.assign({}, ...groups.map(g => g.translate));
+// 扩展标识用 ASCII "wubana"（安卓资源打包会丢弃非 ASCII 目录名），显示名仍为"五班阿"
+translate.wubana = "五班阿";
 
 export const type = "extension";
 
 export default function () {
 	return {
-		name: "五班阿",
+		name: "wubana",
 		editable: false,
 		connect: true,
 		content() {},

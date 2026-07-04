@@ -56,7 +56,12 @@ jobs:
             RELEASE_ARGS+=(--latest=false)
           fi
 
-          gh release create "$TAG" "${RELEASE_ARGS[@]}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists — resetting to draft to rebuild/overwrite assets"
+            gh release edit "$TAG" --draft --title "$TAG" --notes-file apps/core/game/updateLog.md
+          else
+            gh release create "$TAG" "${RELEASE_ARGS[@]}"
+          fi
 
   build-packages:
     name: Build Packages
