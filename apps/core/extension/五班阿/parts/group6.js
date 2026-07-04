@@ -344,6 +344,11 @@ export const skill = {
 		},
 		position: "hes",
 		viewAs: { name: "tiesuo" },
+		// 【铁索连环】来自 extra 卡包；若运行环境未加载该牌，则 lib.card.tiesuo 为空。
+		// 此时应让技能不可用而非在 phaseUse 的 filterEnable 里对空 info 抛错（会导致无法进入出牌阶段）。
+		viewAsFilter() {
+			return Boolean(lib.card.tiesuo);
+		},
 		prompt: "将一张黑桃牌当【铁索连环】使用",
 		check(card) {
 			return 6 - get.value(card);

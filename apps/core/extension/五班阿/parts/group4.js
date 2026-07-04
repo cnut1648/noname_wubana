@@ -11,7 +11,8 @@ export const character = {
 		sex: "male",
 		group: "wu",
 		hp: 5,
-		skills: ["wba_xiangri", "wba_kaihua"],
+		// 初始仅有“向日”；“开花”在“日”达到3张时由“向日”授予（衍生技）
+		skills: ["wba_xiangri"],
 	},
 	wba_chenyi: {
 		sex: "male",
@@ -35,7 +36,8 @@ export const character = {
 		sex: "male",
 		group: "qun",
 		hp: 2,
-		skills: ["wba_feizha", "wba_fakeyou", "wba_nibaba"],
+		// 初始仅有“肺炸”；“法克鱿”“你爸爸”由“肺炸”在濒死时授予（衍生技）
+		skills: ["wba_feizha"],
 	},
 	wba_libowei: {
 		sex: "male",
@@ -125,8 +127,13 @@ export const skill = {
 			if (!player.storage.wba_xiangri && player.getExpansions("wba_ri").length >= 3) {
 				player.storage.wba_xiangri = true;
 				await player.loseMaxHp();
+				// “日”达到3张：永久获得技能“开花”
+				if (!player.hasSkill("wba_kaihua")) {
+					await player.addSkills("wba_kaihua");
+				}
 			}
 		},
+		derivation: ["wba_kaihua"],
 		mod: {
 			maxHandcard(player, num) {
 				return num + player.getExpansions("wba_ri").length;
@@ -161,7 +168,7 @@ export const skill = {
 			const next = target.addToExpansion(cards, player, "give");
 			next.gaintag.add("wba_kaihua_ri");
 			await next;
-			target.addTempSkill("wba_kaihua_effect", "phaseAfter");
+			target.addTempSkill("wba_kaihua_effect", { player: "phaseAfter" });
 			target.storage.wba_kaihua_effect = (target.storage.wba_kaihua_effect || 0) + num;
 			target.markSkill("wba_kaihua_effect");
 			game.log(target, "的下回合手牌上限减少了", get.cnNumber(num));
@@ -185,7 +192,7 @@ export const skill = {
 			return get.suit(card) === "heart";
 		},
 		position: "hs",
-		viewAs: { name: "wuzhongshengyou" },
+		viewAs: { name: "wuzhong" },
 		viewAsFilter(player) {
 			if (player.getStat("skill").wba_banfei) {
 				return false;

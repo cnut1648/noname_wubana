@@ -41,6 +41,14 @@ switch (process.argv[2]) {
 			},
 		});
 		break;
+	case "windir":
+		main(Platform.WINDOWS.createTarget("dir", Arch.x64), {
+			win: {
+				verifyUpdateCodeSignature: false,
+				icon: "noname.ico",
+			},
+		});
+		break;
 	case "linux":
 		main(Platform.LINUX.createTarget("AppImage", Arch.x64));
 		break;

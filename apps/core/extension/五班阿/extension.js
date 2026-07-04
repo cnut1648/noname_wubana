@@ -19,7 +19,7 @@ export default function () {
 	return {
 		name: "五班阿",
 		editable: false,
-		connect: false,
+		connect: true,
 		content() {},
 		precontent() {},
 		config: {},
@@ -29,6 +29,7 @@ export default function () {
 				character,
 				skill,
 				translate,
+				connect: true,
 			},
 			intro: "五班同学主题DIY武将扩展，包含sp、神、球队/乐队及原版共42名武将。",
 			author: "五班",

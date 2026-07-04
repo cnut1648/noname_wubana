@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>五班阿 · 武将技能一览</title>
+<style>
+  :root{
+    --gold:#e8c86a; --gold-2:#c9a44c; --ink:#15100b; --ink-2:#1e1710; --card:#241b12; --card-2:#2c2016;
+    --line:#4a3a24; --text:#efe6d6; --muted:#b6a488; --lock:#7aa9ff; --limit:#ff9a6b; --awaken:#c79bff; --lord:#ffd76b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2a2013 0%, rgba(42,32,19,0) 60%),
+      linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","微软雅黑","Hiragino Sans GB",system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 20px 80px}
+  header.hero{text-align:center;padding:26px 10px 12px;position:relative}
+  .title{
+    font-family:"STKaiti","KaiTi","楷体",serif;
+    font-size:clamp(44px,8vw,84px); line-height:1; margin:0; letter-spacing:.08em;
+    background:linear-gradient(180deg,#fff4d6,var(--gold) 45%,var(--gold-2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 2px 30px rgba(232,200,106,.25);
+  }
+  .subtitle{color:var(--muted);margin:12px 0 2px;font-size:15px;letter-spacing:.12em}
+  .stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .stat{background:rgba(232,200,106,.08);border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:13px;color:var(--gold)}
+  .stat b{color:#fff;font-size:16px;margin-right:4px}
+
+  .controls{position:sticky;top:0;z-index:20;padding:14px 0 12px;margin-top:14px;
+    background:linear-gradient(180deg, var(--ink-2) 70%, rgba(30,23,16,0));backdrop-filter:blur(4px)}
+  .searchbar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:10px 14px;max-width:520px;margin:0 auto 12px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .searchbar input{flex:1;background:transparent;border:0;outline:0;color:var(--text);font-size:15px}
+  .searchbar input::placeholder{color:var(--muted)}
+  .searchbar .ic{opacity:.7}
+  .pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .pill{cursor:pointer;user-select:none;border:1px solid var(--line);background:var(--card);color:var(--muted);
+    padding:7px 16px;border-radius:999px;font-size:14px;transition:.18s}
+  .pill:hover{color:var(--text);border-color:var(--gold-2)}
+  .pill.active{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#2a1d09;border-color:var(--gold);font-weight:700}
+  .count{text-align:center;color:var(--muted);font-size:13px;margin:14px 0 4px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .card{position:relative;background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--line);
+    border-radius:16px;padding:0 0 14px;overflow:hidden;cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+  .card:hover{transform:translateY(-4px);border-color:var(--gold-2);box-shadow:0 16px 34px rgba(0,0,0,.5),0 0 0 1px rgba(232,200,106,.25)}
+  .chead{display:flex;align-items:center;gap:14px;padding:16px 16px 12px;
+    background:linear-gradient(180deg, rgba(232,200,106,.10), rgba(232,200,106,0))}
+  .mono{width:56px;height:56px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+    font-family:"STKaiti","KaiTi",serif;font-size:26px;font-weight:700;color:#1a1206;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.18), 0 4px 12px rgba(0,0,0,.35)}
+  .cmeta{flex:1;min-width:0}
+  .cname{font-family:"STKaiti","KaiTi","楷体",serif;font-size:24px;margin:0;line-height:1.1;color:#fff}
+  .ctags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;align-items:center}
+  .tag{font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
+  .tag.cat{background:rgba(232,200,106,.12);color:var(--gold);border-color:transparent}
+  .tag.grp{color:#fff;border:0;font-weight:700}
+  .hp{display:flex;gap:2px;align-items:center;margin-left:auto}
+  .hp .h{color:#e0554b;font-size:15px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+  .hp .n{color:var(--muted);font-size:12px;margin-left:4px}
+  .skills{padding:4px 16px 0;display:flex;flex-direction:column;gap:10px}
+  .skill{background:rgba(0,0,0,.18);border-left:3px solid var(--gold-2);border-radius:8px;padding:9px 12px}
+  .skill.lock{border-left-color:var(--lock)}
+  .skill.limit{border-left-color:var(--limit)}
+  .skill.awaken{border-left-color:var(--awaken)}
+  .skill.lord{border-left-color:var(--lord)}
+  .sname{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--gold);font-size:16px}
+  .stype{font-size:10px;padding:1px 7px;border-radius:5px;color:#1a1206;font-weight:700}
+  .stype.lock{background:var(--lock)} .stype.limit{background:var(--limit)}
+  .stype.awaken{background:var(--awaken)} .stype.lord{background:var(--lord)}
+  .sinfo{color:var(--muted);font-size:13.5px;line-height:1.7;margin-top:5px}
+  .sinfo b,.sinfo .kw{color:var(--gold)}
+  mark{background:rgba(232,200,106,.35);color:#fff;border-radius:3px;padding:0 2px}
+
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:rgba(6,4,2,.72);backdrop-filter:blur(6px);padding:20px}
+  .modal.open{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal .box{max-width:640px;width:100%;max-height:88vh;overflow:auto;background:linear-gradient(180deg,var(--card-2),var(--card));
+    border:1px solid var(--gold-2);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .modal .close{position:sticky;top:0;float:right;margin:10px;cursor:pointer;color:var(--muted);font-size:22px;
+    background:rgba(0,0,0,.3);border-radius:8px;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line)}
+  .empty{text-align:center;color:var(--muted);padding:60px 0;font-size:16px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;line-height:1.9}
+  footer a{color:var(--gold-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1 class="title">五班阿</h1>
+    <div class="subtitle">无 名 杀 · 五 班 同 学 主 题 扩 展</div>
+    <div class="stats">
+      <span class="stat"><b>42</b>名武将</span>
+      <span class="stat"><b>91</b>个技能</span>
+      <span class="stat"><b>6</b>个系列</span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="searchbar">
+      <span class="ic">🔍</span>
+      <input id="q" type="search" placeholder="搜索武将名 / 技能名 / 技能描述…" autocomplete="off" />
+    </div>
+    <div class="pills" id="pills"></div>
+  </div>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">没有匹配的武将，换个关键词试试～</div>
+
+  <footer>
+    五班阿扩展 · 42 名武将 / 105 个技能 · 技能均为同学梗自制<br/>
+    <span style="color:#7aa9ff">■</span> 锁定技　<span style="color:#ff9a6b">■</span> 限定技　<span style="color:#c79bff">■</span> 觉醒技　<span style="color:#ffd76b">■</span> 主公技
+  </footer>
+</div>
+
+<div class="modal" id="modal"><div class="box" id="mbox"><div class="close" id="mclose">✕</div><div id="mcontent"></div></div></div>
+
+<script>
+const DATA = [{"key":"wba_sp_hezhizhao","name":"sp何智昭","cat":"sp","group":"qun","sex":"male","hp":3,"skills":[{"name":"农夫与蛇","info":"结束阶段，你可以指定一名其他角色为“蛇”。到你的下回合开始前，该角色每使用一张牌指定你为目标时，你可以摸一张牌。","type":null},{"name":"吕洞宾与狗","info":"准备阶段，你可以指定一名其他角色为“狗”，本回合内其每打出一张牌响应你指定其为目标的牌，你摸一张牌。","type":null},{"name":"我与够汪磊","info":"锁定技，当你死亡时，杀死你的角色成为“够汪磊”并失去所有非锁定技能直到游戏结束。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_sp_xujiashu","name":"sp徐家澍","cat":"sp","group":"qun","sex":"male","hp":3,"skills":[{"name":"博览","info":"摸牌阶段，你改为展示牌堆顶的四张牌，并获得其中任意张点数之和小于等于13的牌。","type":null},{"name":"自焚","info":"限定技，出牌阶段，你可以失去一点体力，令所有其他角色依次（按座次）选择一项：1.弃置至少X张牌（若上一名进行选择的角色以此法弃置过牌，则X为其以此法弃置的牌数+1，否则X为1）；2.受到你造成的2点火焰伤害。","type":{"label":"限定技","cls":"limit"}}]},{"key":"wba_sp_songyijian","name":"sp宋轶健","cat":"sp","group":"qun","sex":"male","hp":3,"skills":[{"name":"推理","info":"出牌阶段限一次，你可以与一名其他角色拼点。若你赢，则该角色本回合所有非锁定技失效，你计算至其的距离视为1，且本回合内若你对其使用的【杀】被【闪】抵消，你可以弃置其一张手牌。","type":null},{"name":"明断","info":"你可以将一张黑色牌当作【无懈可击】使用。","type":null}]},{"key":"wba_sp_huangyanrui","name":"sp黄彦瑞","cat":"sp","group":"qun","sex":"male","hp":3,"skills":[{"name":"存粮","info":"摸牌阶段，若你的武将牌上没有“粮”，你可以额外摸两张牌，并可以将任意数量的手牌置于武将牌上，称为“粮”；其他角色的【兵粮寸断】不能指定你为目标（“蔡晶君”除外）。","type":null},{"name":"布施","info":"一名角色的结束阶段，若该角色的手牌数小于其体力值且你有“粮”，你可以移去一张“粮”，令该角色摸两张牌。","type":null},{"name":"失踪","info":"觉醒技，准备阶段，若你的体力值为1且武将牌上没有“粮”，你减1点体力上限，失去“存粮”和“布施”，然后获得两个新技能。","type":{"label":"觉醒技","cls":"awaken"}}]},{"key":"wba_sp_chenyi","name":"sp陈翼","cat":"sp","group":"qun","sex":"male","hp":4,"skills":[{"name":"校草","info":"锁定技，摸牌阶段你额外摸一张牌，且你的手牌上限恒定为你的体力上限。","type":{"label":"锁定技","cls":"lock"}},{"name":"吸毒","info":"准备阶段，你可以弃置两张颜色不同的牌并选择一项：1.本回合出牌阶段你可以多使用两张【杀】；2.将场上一名角色装备区的一张牌移动给另一名角色；3.获得其他一名角色的一张手牌。","type":null}]},{"key":"wba_sp_xushengjie","name":"sp许盛杰","cat":"sp","group":"qun","sex":"male","hp":4,"skills":[{"name":"入眠","info":"当你即将受到伤害时，你可以摸一张牌并将武将牌翻面，防止此次伤害。","type":null},{"name":"清醒","info":"当你将武将牌从背面翻回正面时，你可以选择一项：1.回复一点体力；2.摸两张牌。","type":null}]},{"key":"wba_shen_libowei","name":"神李博为","cat":"shen","group":"shen","sex":"male","hp":5,"skills":[{"name":"创作","info":"游戏开始时，你随机获得两张武将牌，然后亮出其中一张。你获得亮出的“化身”牌的一个技能，且性别和势力视为与“化身”牌相同。回合开始时或结束后，你可以更改亮出的“化身”牌，并重新声明一个技能。（不能声明限定技、觉醒技或主公技）","type":{"label":"限定技","cls":"limit"}},{"name":"怀旧","info":"锁定技，当你失去一点体力或受到伤害后，你获得一张新的“化身”牌。你的手牌上限恒定为X+1（X为你拥有的“化身”牌的数量）。","type":{"label":"锁定技","cls":"lock"}},{"name":"开始吧","info":"锁定技，结束阶段，你摸一张牌。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_shen_xujiashu","name":"神徐家澍","cat":"shen","group":"shen","sex":"male","hp":5,"skills":[{"name":"转学","info":"出牌阶段限一次，你可以弃置任意张牌，然后摸等量的牌。若你以此法弃置的牌中包括你的所有手牌，你多摸一张牌。","type":null},{"name":"夏校","info":"结束阶段，若本回合你打出或使用的手牌花色数量大于你的体力值，则你可以选择一项：1.摸四张牌并将武将牌翻面；2.弃置一张红色花色的手牌并回复一点体力。","type":null}]},{"key":"wba_shen_huangyanrui","name":"神黄彦瑞","cat":"shen","group":"shen","sex":"male","hp":5,"skills":[{"name":"借箭","info":"每当你被“单独”指定为一张牌的目标时，你可以进行一次判定：若结果为红色，你将判定牌置于武将牌上，称为“箭”；若为梅花，你摸一张牌；若为黑桃，你可以使这张以你为目标的牌对你无效。","type":null},{"name":"放箭","info":"出牌阶段，你可以将任意数量的“箭”当作【万箭齐发】使用。","type":null},{"name":"跤友","info":"锁定技，当你的武将牌上没有“箭”时，男性角色对你、你对男性角色造成的伤害均加一。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_shen_songyijian","name":"神宋轶健","cat":"shen","group":"shen","sex":"male","hp":5,"skills":[{"name":"摸鱼","info":"若你的手牌数为全场最多，你可以跳过摸牌阶段；若你的体力值为全场最多，你可以跳过出牌阶段；若你的装备区里有牌且数量为全场最多，你可以跳过弃牌阶段。","type":null},{"name":"加班","info":"结束阶段，你可以选择一项：1.摸X+1张牌（X为本回合你跳过的阶段数量）；2.从至多X名角色手牌中各抽取一张牌。之后你进行一个额外的出牌阶段。","type":null},{"name":"摆烂","info":"结束阶段，若本回合你没有跳过任一阶段，你可以选择一名角色，视为对其使用一张无距离限制的杀。","type":null}]},{"key":"wba_shen_dushiyu","name":"神杜时宇","cat":"shen","group":"shen","sex":"male","hp":5,"skills":[{"name":"奇才","info":"你可以将任意黑色牌当作【无懈可击】使用，将任意红色牌当作【无中生有】使用，每轮均限一次。","type":null},{"name":"诺奖","info":"其他角色的结束阶段，若你本回合未成为过其使用牌的目标，你摸一张牌；否则你可以弃置X张牌对其造成一点伤害（X为你本回合成为其使用牌的目标次数）。","type":null}]},{"key":"wba_libowei_band","name":"李博为·管乐队","cat":"band","group":"wei","sex":"male","hp":4,"skills":[{"name":"参演","info":"锁定技，其他角色到你的距离+1。","type":{"label":"锁定技","cls":"lock"}},{"name":"奏乐","info":"结束阶段，若你本回合使用或打出的牌的点数严格递增，你可以摸两张牌；若严格递减，你可以视为再次使用一张本回合你使用或打出过的牌。","type":null}]},{"key":"wba_dushiyu_band","name":"杜时宇·管乐队","cat":"band","group":"wei","sex":"male","hp":4,"skills":[{"name":"参演","info":"锁定技，其他角色到你的距离+1。","type":{"label":"锁定技","cls":"lock"}},{"name":"击鼓","info":"出牌阶段，你每使用或打出一张与你上一张牌类型不同的牌时，你摸一张牌。","type":null}]},{"key":"wba_chenjiahao_soccer","name":"陈嘉豪·足球队","cat":"soccer","group":"shu","sex":"male","hp":5,"skills":[{"name":"长驱","info":"锁定技，你到其他角色的距离-1。","type":{"label":"锁定技","cls":"lock"}},{"name":"昂扬","info":"当你成为红色【杀】或【决斗】的目标时，你摸一张牌；若你因此受到伤害，你可以弃置伤害来源的一张牌。","type":null}]},{"key":"wba_xushizhou_soccer","name":"徐施舟·足球队","cat":"soccer","group":"shu","sex":"male","hp":5,"skills":[{"name":"长驱","info":"锁定技，你到其他角色的距离-1。","type":{"label":"锁定技","cls":"lock"}},{"name":"奔袭","info":"其他角色的回合内，若你成为过其【杀】或【决斗】的目标，则该角色的结束阶段，你可以将一张黑色牌当作【杀】或【决斗】对其使用。","type":null}]},{"key":"wba_liuyanghe_jx","name":"刘阳河·界限突破","cat":"jx","group":"qun","sex":"male","hp":4,"skills":[{"name":"摄影","info":"每当其他一名角色造成伤害后，你可以选择其一项技能（非锁定技、限定技、觉醒技）并获得其一次性使用权；在你使用该技能或对该角色造成伤害之前，该角色无法使用该技能。","type":{"label":"限定技","cls":"limit"}}]},{"key":"wba_qizhizhu","name":"七只猪","cat":"origin","group":"qun","sex":"male","hp":7,"skills":[{"name":"被阿","info":"准备阶段，你可以将至多两名其他角色的各一张牌置于你的武将牌上，称为「阿」；当你有不少于两张「阿」时，其他角色于其出牌阶段可以移去两张「阿」，视为对你使用一张【杀】（有距离限制且计入出牌阶段使用次数）。","type":null},{"name":"日天","info":"锁定技，若你的体力值为全场唯一最多，则你对其他角色使用【杀】时须弃置一张基本牌，否则此【杀】无效。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_chenjiahao","name":"陈嘉豪","cat":"origin","group":"wei","sex":"male","hp":4,"skills":[{"name":"基佬","info":"锁定技，男性角色对你、你对男性角色造成的伤害均+1。","type":{"label":"锁定技","cls":"lock"}},{"name":"黑洞","info":"当你受到群体伤害或技能造成的伤害时，你可以进行一次判定，若结果为黑色，则此伤害无效。","type":null}]},{"key":"wba_chenkaihua","name":"陈凯华","cat":"origin","group":"wu","sex":"male","hp":5,"skills":[{"name":"向日","info":"每当你受到伤害后，你可以从牌堆顶取等量的牌置于你的武将牌上，称为“日”。每有一张“日”，你的手牌上限便+1。当你拥有的“日”达到三张或更多时，你减少1点体力上限（仅一次）。","type":null},{"name":"开花","info":"出牌阶段，你可以大喊“吥屎啦你”，将至多X张“日”置于一名角色的武将牌上，令其下回合手牌上限-X。","type":null}]},{"key":"wba_chenyi","name":"陈翼","cat":"origin","group":"wei","sex":"male","hp":4,"skills":[{"name":"班费","info":"每回合限一次，你可以将一张红桃手牌当做【无中生有】使用。","type":null},{"name":"吸毒","info":"准备阶段，你可以减少1点体力，然后选择一项：1.本回合出牌阶段你可以多使用两张【杀】；2.移除一名角色判定区里的一张牌；3.获得其他一名角色的一张手牌。","type":null}]},{"key":"wba_hezhizhao","name":"何智昭","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"念经","info":"一名角色的判定牌生效前，你可以打出一张红色牌替换之。","type":null},{"name":"佛心","info":"当你受到伤害时，你可以弃置两张手牌，防止此伤害。","type":null}]},{"key":"wba_dushiyu","name":"杜时宇","cat":"origin","group":"wei","sex":"male","hp":4,"skills":[{"name":"脱鞋","info":"出牌阶段限两次，你可以弃置一张装备牌并选择一名其他角色：若其装备区里有牌，你获得其装备区里的一张牌；否则其失去1点体力。","type":null},{"name":"膜蛤","info":"锁定技，你造成的伤害均视为体力流失。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_dahuang","name":"大黄","cat":"origin","group":"qun","sex":"male","hp":2,"skills":[{"name":"肺炸","info":"限定技，当你处于濒死状态时，你可以弃置所有手牌与装备牌，然后摸两张牌、将体力回复至2点，并永久获得技能〖法克鱿〗和〖你爸爸〗。","type":{"label":"限定技","cls":"limit"}},{"name":"法克鱿","info":"当你使用的【杀】被【闪】抵消时，你可以大喊“法克鱿”，弃置该角色的一张手牌。","type":null},{"name":"你爸爸","info":"每当你于回合外失去一张牌后，你可以大喊“你爸爸”，弃置来源角色的一张手牌（若无明确来源，则你可选择一名其他角色）。","type":null}]},{"key":"wba_libowei","name":"李博为","cat":"origin","group":"wei","sex":"male","hp":4,"skills":[{"name":"吥屎","info":"每当其他角色对你造成伤害后，你可以大喊“吥屎啦你”，获得其等量的手牌。","type":null},{"name":"校花","info":"锁定技，结束阶段开始时，你摸一张牌。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_qizhiyue","name":"戚知悦","cat":"origin","group":"qun","sex":"female","hp":3,"skills":[{"name":"花心","info":"锁定技，女性角色对你使用的【杀】、或你对女性角色使用的【杀】，其目标角色需依次使用两张【闪】才能抵消。","type":{"label":"锁定技","cls":"lock"}},{"name":"发音很标准","info":"当你受到伤害或失去体力后，你可以念一声“tiu”并弃置两张牌，令任意一名角色回复1点体力。","type":null},{"name":"骂你怎么了","info":"你可以将一张黑桃牌当做【决斗】使用。","type":null}]},{"key":"wba_qiuhaorong","name":"邱昊嵘","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"模仿","info":"游戏开始时，你随机获得两张未加入游戏的武将牌，选择一张置于你面前并声明该武将的一项技能（不可声明限定技/觉醒技/主公技），你拥有该技能且性别与势力视为与该武将相同，直到化身被替换。你的每个回合开始时和结束后，你可以替换化身牌，并为新化身重新声明一项技能。","type":{"label":"限定技","cls":"limit"}},{"name":"新生","info":"你每受到1点伤害，可以获得一张新的化身牌（一个随机的未加入游戏的武将名）。","type":null}]},{"key":"wba_songyijian","name":"宋轶健","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"学委","info":"准备阶段，你可以进行一次判定，本回合中你每打出或使用一张与判定牌类别相同的牌，你可以摸一张牌。","type":null},{"name":"不萎","info":"限定技，当你失去全部手牌时，你可以立刻摸取X张牌（X为你当前的体力值）。","type":{"label":"限定技","cls":"limit"}}]},{"key":"wba_xujiashu","name":"徐家澍","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"cool","info":"每当场上有一名角色受到伤害后，你可以感叹“cool”并进行一次判定，若判定结果为红色，则你获得此判定牌。","type":null},{"name":"吃饭看手机","info":"你的所有延时性锦囊牌均可当作【桃】使用。","type":null}]},{"key":"wba_xushizhou","name":"徐施舟","cat":"origin","group":"wu","sex":"male","hp":4,"skills":[{"name":"修仙","info":"回合结束时，你可以选择摸三张牌，若如此做，你跳过你的下一个回合。","type":null},{"name":"小眼","info":"你可以将“杀”当作“闪”使用或打出，将“闪”当作“杀”使用或打出。","type":null}]},{"key":"wba_xushengjie","name":"许盛杰","cat":"origin","group":"qun","sex":"male","hp":4,"skills":[{"name":"修仙","info":"弃牌阶段开始时，你可以跳过此弃牌阶段并摸一张牌，若如此做，你跳过你的下一个回合。","type":null},{"name":"中二","info":"限定技，当你进入濒死阶段时，你可以翻开牌堆顶的四张牌，回复X点体力（X为其中红色牌的数量），然后将这些牌置入弃牌堆。","type":{"label":"限定技","cls":"limit"}}]},{"key":"wba_liuyanghe","name":"刘阳河","cat":"origin","group":"qun","sex":"male","hp":4,"skills":[{"name":"非洲酋长","info":"锁定技，你的红色牌、别人对你使用的红色牌、你的判定牌，均视为黑桃。","type":{"label":"锁定技","cls":"lock"}},{"name":"大河","info":"出牌阶段限X次（X为你已损失的体力值且至少为1），你可以将一张黑色牌当作“水淹七军”对一名其他角色使用，其选择一项：1.弃置装备区里的所有牌；2.受到你造成的1点伤害。","type":null}]},{"key":"wba_songzhao","name":"宋沼","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"装逼","info":"回合结束阶段，你可以摸X张牌，然后增加1点体力上限（X为场上手牌数不小于你的角色数）。","type":null},{"name":"八天八夜","info":"限定技，当你的手牌数不小于八张时，你的体力上限变为4，并失去技能“装逼”，获得技能“一向是第一”。","type":{"label":"限定技","cls":"limit"}}]},{"key":"wba_caijingjun","name":"蔡晶君","cat":"origin","group":"qun","sex":"female","hp":3,"skills":[{"name":"哪里来","info":"当一名角色对你使用【杀】时，你可以进行一次判定，若结果为红色，则你视为已经闪避此【杀】（此【杀】对你无效）。","type":null},{"name":"哪里去","info":"当你使用的【杀】被一名角色的【闪】抵消时，你可以进行一次判定，若结果为黑色，则你可以弃置该角色一张手牌。","type":null}]},{"key":"wba_gaowen","name":"高雯","cat":"origin","group":"qun","sex":"female","hp":3,"skills":[{"name":"狂笑","info":"限定技，出牌阶段，你可以弃置一张黑色手牌，视为你使用了一张【南蛮入侵】和一张【万箭齐发】。","type":{"label":"限定技","cls":"limit"}},{"name":"语速飞快","info":"锁定技，你于一回合内使用【杀】的次数无限制。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_zhuminhui","name":"朱敏惠","cat":"origin","group":"qun","sex":"female","hp":3,"skills":[{"name":"经验主义者","info":"当一名其他角色因弃置而失去至少两张手牌后，你可以从其弃置的手牌中获得X张（X为其弃置的手牌数减一）。","type":null},{"name":"数学爱好者","info":"出牌阶段限一次，你可以与一名其他角色拼点，若你赢，则本回合内你的攻击范围+1，且使用【杀】的次数上限+1。","type":null}]},{"key":"wba_tianyuzhu","name":"田雨竹","cat":"origin","group":"qun","sex":"female","hp":4,"skills":[{"name":"团支书","info":"当你每受到1点伤害后，你可以指定一名角色，你与其各摸一张牌。","type":null},{"name":"田鼠","info":"视为技，你可以将一张方片牌当【顺手牵羊】使用。","type":null}]},{"key":"wba_xuwei","name":"徐薇","cat":"origin","group":"qun","sex":"female","hp":3,"skills":[{"name":"口误","info":"当你使用【杀】指定一名其他角色为目标时，你无视其防具；且你不会成为【借刀杀人】的目标。","type":null},{"name":"拒收","info":"出牌阶段限一次，你可以指定一名其他角色，抽取其一张手牌，或视为对其使用一张【杀】。","type":null}]},{"key":"wba_durenjuan","name":"杜任娟","cat":"origin","group":"qun","sex":"female","hp":8,"skills":[{"name":"发型崩坏","info":"每当一个回合结束时，若你的体力值为全场唯一最高，你须减少1点体力或1点体力上限。","type":null},{"name":"侬则西宁","info":"锁定技，你使用【杀】无距离限制。","type":{"label":"锁定技","cls":"lock"}},{"name":"还有别的伐","info":"视为技，你可以将一张黑桃牌当【铁索连环】使用。","type":null}]},{"key":"wba_yangyuchen","name":"杨雨晨","cat":"origin","group":"qun","sex":"male","hp":4,"skills":[{"name":"五米巨大化","info":"限定技，出牌阶段，你可以指定一名角色（含你自己），令其回复2点体力。","type":{"label":"限定技","cls":"limit"}},{"name":"十五米巨大化","info":"出牌阶段，你可以失去1点体力，视为对全场任意一名角色使用一张无距离限制、无视防具且伤害+1的【杀】（可反复发动）。","type":null}]},{"key":"wba_maojiajun","name":"茅家俊","cat":"origin","group":"qun","sex":"male","hp":4,"skills":[{"name":"自主锻炼","info":"视为技，你可以将一张红桃牌当【乐不思蜀】使用。","type":null},{"name":"大家都是成年人","info":"锁定技，场上每有一名体力值大于你的角色，你的手牌上限便+1。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_mym","name":"mym","cat":"origin","group":"qun","sex":"male","hp":3,"skills":[{"name":"课前训话","info":"出牌阶段限一次，你可以交给一名其他角色一张基本牌，然后其展示一张其他手牌：若该牌点数小于你交给的牌，你摸一张牌；否则其可以视为对除你以外的一名角色使用一张【杀】。","type":null},{"name":"迷之年龄","info":"锁定技，你的手牌上限始终等于你的体力上限；其他角色无法知晓你的体力值。","type":{"label":"锁定技","cls":"lock"}}]},{"key":"wba_liankang","name":"李安康","cat":"origin","group":"qun","sex":"male","hp":4,"skills":[{"name":"你是刘子平","info":"限定技，出牌阶段，你可以指定一名角色成为“刘子平”。此后你的准备阶段，你可以弃置一张牌，令“刘子平”下个摸牌阶段少摸一张牌；“刘子平”死亡时，其手牌与装备牌均交给你。","type":{"label":"限定技","cls":"limit"}},{"name":"你们看一下子","info":"你的判定牌生效后，你可以将其置于武将牌上，称为“v-t图”；每当你拥有的“v-t图”数量达到四的倍数时，你可以弃置X张牌并令一名角色失去1点体力（X为该角色的体力值）。","type":null}]}];
+const CATS = [{"id":"sp","label":"SP"},{"id":"shen","label":"神话"},{"id":"band","label":"管乐队"},{"id":"soccer","label":"足球队"},{"id":"jx","label":"界限突破"},{"id":"origin","label":"原版"}];
+const GROUPS = {"wei":{"name":"魏","color":"#5b8fd6"},"shu":{"name":"蜀","color":"#d15b52"},"wu":{"name":"吴","color":"#43b07a"},"qun":{"name":"群","color":"#c9a44c"},"shen":{"name":"神","color":"#e8c86a"},"jin":{"name":"晋","color":"#b8bcc2"}};
+let curCat = "all", curQ = "";
+
+const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function hl(s){ // 高亮牌名【】与搜索词
+  let t = esc(s).replace(/【([^】]+)】/g,'【<span class="kw">$1</span>】');
+  if(curQ){ const re=new RegExp('('+curQ.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'); t=t.replace(re,'<mark>$1</mark>'); }
+  return t;
+}
+function grpTag(g){ const G=GROUPS[g]||{name:g,color:"#999"}; return '<span class="tag grp" style="background:'+G.color+'">'+G.name+'</span>'; }
+function monoStyle(g){ const G=GROUPS[g]||{color:"#c9a44c"}; return 'background:linear-gradient(160deg,'+G.color+',#e8c86a)'; }
+function hearts(hp){ let h=''; for(let i=0;i<hp;i++) h+='<span class="h">❤</span>'; return '<span class="hp">'+h+'<span class="n">'+hp+'</span></span>'; }
+function sexIcon(s){ return s==="female"?'♀':'♂'; }
+function catLabel(id){ const c=CATS.find(x=>x.id===id); return c?c.label:id; }
+
+function skillHTML(sk){
+  const t=sk.type?('<span class="stype '+sk.type.cls+'">'+sk.type.label+'</span>'):'';
+  return '<div class="skill '+(sk.type?sk.type.cls:'')+'"><div class="sname">'+esc(sk.name)+t+'</div><div class="sinfo">'+hl(sk.info)+'</div></div>';
+}
+function cardHTML(d){
+  return '<div class="card" data-key="'+d.key+'">'
+    +'<div class="chead"><div class="mono" style="'+monoStyle(d.group)+'">'+esc(d.name[0]||'')+'</div>'
+    +'<div class="cmeta"><h3 class="cname">'+esc(d.name)+'</h3>'
+    +'<div class="ctags"><span class="tag cat">'+catLabel(d.cat)+'</span>'+grpTag(d.group)
+    +'<span class="tag">'+sexIcon(d.sex)+'</span>'+hearts(d.hp)+'</div></div></div>'
+    +'<div class="skills">'+d.skills.map(skillHTML).join('')+'</div></div>';
+}
+
+function render(){
+  const q=curQ.toLowerCase();
+  const list=DATA.filter(d=>{
+    if(curCat!=="all" && d.cat!==curCat) return false;
+    if(!q) return true;
+    if(d.name.toLowerCase().includes(q)) return true;
+    return d.skills.some(s=>(s.name+ ' ' + s.info).toLowerCase().includes(q));
+  });
+  const grid=document.getElementById('grid');
+  grid.innerHTML=list.map(cardHTML).join('');
+  document.getElementById('count').textContent='显示 '+list.length+' / '+DATA.length+' 名武将';
+  document.getElementById('empty').style.display=list.length?'none':'block';
+  [...grid.querySelectorAll('.card')].forEach(el=>el.onclick=()=>openModal(el.dataset.key));
+}
+function openModal(key){
+  const d=DATA.find(x=>x.key===key); if(!d)return;
+  document.getElementById('mcontent').innerHTML=
+    '<div class="chead" style="padding:22px 22px 16px"><div class="mono" style="width:72px;height:72px;font-size:34px;'+monoStyle(d.group)+'">'+esc(d.name[0]||'')+'</div>'
+    +'<div class="cmeta"><h3 class="cname" style="font-size:32px">'+esc(d.name)+'</h3>'
+    +'<div class="ctags"><span class="tag cat">'+catLabel(d.cat)+'</span>'+grpTag(d.group)+'<span class="tag">'+sexIcon(d.sex)+'</span>'+hearts(d.hp)+'</div></div></div>'
+    +'<div class="skills" style="padding:6px 22px 26px">'+d.skills.map(skillHTML).join('')+'</div>';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+// pills
+const pills=document.getElementById('pills');
+pills.innerHTML=['<span class="pill active" data-c="all">全部</span>'].concat(CATS.map(c=>'<span class="pill" data-c="'+c.id+'">'+c.label+'</span>')).join('');
+[...pills.children].forEach(p=>p.onclick=()=>{[...pills.children].forEach(x=>x.classList.remove('active'));p.classList.add('active');curCat=p.dataset.c;render();});
+document.getElementById('q').addEventListener('input',e=>{curQ=e.target.value.trim();render();});
+document.getElementById('mclose').onclick=closeModal;
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+render();
+</script>
+</body>
+</html>

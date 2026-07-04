@@ -113,7 +113,7 @@ export const skill = {
 	},
 	// 我与够汪磊
 	wba_gouwanglei: {
-		trigger: { player: "dieAfter" },
+		trigger: { player: "die" },
 		forced: true,
 		locked: true,
 		forceDie: true,
@@ -121,7 +121,11 @@ export const skill = {
 			return event.source && event.source.isIn() && event.source != player;
 		},
 		async content(event, trigger, player) {
-			const source = event.source;
+			// content 里 event 是技能事件、trigger 才是死亡事件，凶手在 trigger.source
+			const source = trigger.source;
+			if (!source || !source.isIn()) {
+				return;
+			}
 			const skills = source.getSkills(null, false, false).filter(skill => {
 				const info = get.info(skill);
 				return info && !info.charlotte && get.is.locked(skill, source) == false;
@@ -419,6 +423,7 @@ export const skill = {
 		animationColor: "gray",
 		trigger: { player: "phaseZhunbeiBegin" },
 		forced: true,
+		derivation: ["wba_fakeyou", "wba_nibaba"],
 		filter(event, player) {
 			return player.hp == 1 && player.getExpansions("wba_liang").length == 0;
 		},

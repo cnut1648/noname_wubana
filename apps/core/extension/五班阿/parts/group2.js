@@ -235,7 +235,11 @@ export const skill = {
 			if (event.name == "useCardToTargeted") {
 				return event.player != player;
 			}
-			// damageEnd：你（player）受到伤害，来源为红杀/红决斗的使用者
+			// damageEnd：你（player）因“成为红杀/红决斗的目标”而受到伤害，来源为使用者
+			// 需确认你确为该牌使用的目标（例如你自己使用【决斗】落败受伤时，你并非目标，不应触发）
+			if (!event.getParent("useCard")?.targets?.includes(player)) {
+				return false;
+			}
 			return event.source && event.source != player && event.source.isIn() && event.source.countCards("he") > 0;
 		},
 		async cost(event, trigger, player) {
@@ -698,13 +702,19 @@ export const skill = {
 		group: ["wba_sheying_return"],
 		subSkill: {
 			return: {
-				trigger: { player: ["damageSource", "useSkillAfter"] },
+				// 归还时机：你使用了借来的技能 / 你对来源造成伤害 / 你或来源死亡
+				trigger: { player: ["damageSource", "useSkillAfter", "dieAfter"], global: "dieAfter" },
 				forced: true,
+				forceDie: true,
 				popup: false,
 				filter(event, player) {
 					const storage = player.getStorage("wba_sheying");
 					if (!storage.length) {
 						return false;
+					}
+					// die 事件：你死亡 -> 全部归还；某来源死亡 -> 归还其对应技能
+					if (event.name == "die") {
+						return event.player == player || storage.some(info => info.source == event.player);
 					}
 					// damage 事件（damageSource 时机）：你对借来技能的原主造成伤害
 					if (event.name == "damage") {
@@ -715,13 +725,15 @@ export const skill = {
 				},
 				async content(event, trigger, player) {
 					let storage = player.getStorage("wba_sheying").slice();
-					const isDamage = trigger.name == "damage";
-					const toReturn = storage.filter(info => {
-						if (isDamage) {
-							return info.source == trigger.player;
-						}
-						return info.skill == trigger.skill;
-					});
+					let toReturn;
+					if (trigger.name == "die") {
+						// 你自己死亡：全部归还；某来源死亡：仅归还其对应技能
+						toReturn = trigger.player == player ? storage.slice() : storage.filter(info => info.source == trigger.player);
+					} else if (trigger.name == "damage") {
+						toReturn = storage.filter(info => info.source == trigger.player);
+					} else {
+						toReturn = storage.filter(info => info.skill == trigger.skill);
+					}
 					for (const info of toReturn) {
 						if (info.source && info.source.isIn()) {
 							info.source.enableSkill("wba_sheying_" + player.playerid + "_" + info.skill);

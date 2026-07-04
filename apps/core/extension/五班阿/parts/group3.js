@@ -284,7 +284,7 @@ export const skill = {
 	/* ============ 神黄彦瑞 ============ */
 	// 借箭：被单独指定为一张牌的目标时，可判定：红色→置为“箭”；梅花→摸牌；黑桃→可使该牌对你无效
 	wba_jiejian: {
-		trigger: { player: "useCardToTargeted" },
+		trigger: { target: "useCardToTargeted" },
 		filter(event, player) {
 			const parent = event.getParent();
 			return parent && Array.isArray(parent.targets) && parent.targets.length === 1 && event.target === player;
@@ -534,7 +534,7 @@ export const skill = {
 	},
 	wba_qicai_wuzhong: {
 		enable: "phaseUse",
-		viewAs: { name: "wuzhongshengyou" },
+		viewAs: { name: "wuzhong" },
 		filterCard(card) {
 			return get.color(card) === "red";
 		},
