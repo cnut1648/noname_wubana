@@ -5,8 +5,33 @@ import * as group3 from "./parts/group3.js";
 import * as group4 from "./parts/group4.js";
 import * as group5 from "./parts/group5.js";
 import * as group6 from "./parts/group6.js";
+import * as group7 from "./parts/group7.js";
+import * as group8 from "./parts/group8.js";
+import * as group9 from "./parts/group9.js";
 
-const groups = [group1, group2, group3, group4, group5, group6];
+const groups = [group1, group2, group3, group4, group5, group6, group7, group8, group9];
+
+// 新增势力：研(yan) / 工(gong) / 游(you)，以及“调班”动态转换的 阳(yang) / 阴(yin)
+const wubanaGroups = {
+	yan: { name: "研", nature: "thunder" },
+	gong: { name: "工", nature: "wood" },
+	you: { name: "游", nature: "water" },
+	yang: { name: "阳", nature: "fire" },
+	yin: { name: "阴", nature: "shen" },
+};
+function registerWubanaGroups() {
+	for (const id in wubanaGroups) {
+		const { name, nature } = wubanaGroups[id];
+		if (!lib.group.includes(id)) {
+			lib.group.add(id);
+		}
+		lib.translate[id] = name;
+		lib.translate[`${id}2`] = name;
+		lib.translate[`group_${id}`] = `${name}势力`;
+		lib.translate[`group_${id}_bg`] = name;
+		lib.groupnature[id] = nature;
+	}
+}
 
 // 合并各分组导出的武将、技能与翻译
 const character = Object.assign({}, ...groups.map(g => g.character));
@@ -22,8 +47,12 @@ export default function () {
 		name: "wubana",
 		editable: false,
 		connect: true,
-		content() {},
-		precontent() {},
+		content() {
+			registerWubanaGroups();
+		},
+		precontent() {
+			registerWubanaGroups();
+		},
 		config: {},
 		help: {},
 		package: {
@@ -33,11 +62,11 @@ export default function () {
 				translate,
 				connect: true,
 			},
-			intro: "五班同学主题DIY武将扩展，包含sp、神、球队/乐队及原版共42名武将。",
+			intro: "五班同学主题DIY武将扩展，包含sp、神、球队/乐队、研/工/游三势力及原版共51名武将。",
 			author: "五班",
 			diskURL: "",
 			forumURL: "",
-			version: "1.0",
+			version: "1.2",
 		},
 		files: { character: [], card: [], skill: [], audio: [] },
 	};
